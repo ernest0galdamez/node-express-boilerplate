@@ -21,6 +21,8 @@ Clone the repo:
 ```bash
 git clone https://github.com/ernest0galdamez/node-express-boilerplate.git
 cd node-express-boilerplate
+# Optional: If you want to remove the existing Git repository and history to start fresh, you can use the following command.
+# This step is typically done when starting a new project or sharing the code publicly to remove Git-related information.
 npx rimraf ./.git
 ```
 
@@ -154,34 +156,37 @@ npm run prettier:fix
 The application uses environment variables to customize its behavior for different scenarios. You can locate and alter these variables in the `.env` file. The default configuration is as follows:
 
 ```bash
-# The server's listening port
+# Application Settings
+# Port number for the application
 PORT=3000
-
-# Specifies the level of logging details
+# Log level for the application
 LOG_LEVEL=info
-
-# Specifies the environment the app is running in
+# Node.js environment configuration (e.g., development, production)
 NODE_ENV=production
 
-# The connection string for MongoDB
+# Database Settings
+# URL of the MongoDB database
 MONGODB_URL=mongodb://127.0.0.1:27017/node-express-boilerplate
 
-# Configuration for JSON Web Tokens (JWT)
-# The secret key used for token generation and validation
-JWT_SECRET=samplesecret
-# Duration (in minutes) for which the access token remains valid
+# JWT (JSON Web Token) Configuration
+# JWT secret key for token signing and validation
+JWT_SECRET=thisisasamplesecret
+# Number of minutes after which an access token expires
 JWT_ACCESS_EXPIRATION_MINUTES=30
-# Duration (in days) for which the refresh token remains valid
+# Number of days after which a refresh token expires
 JWT_REFRESH_EXPIRATION_DAYS=30
+# Number of minutes after which a reset password token expires
+JWT_RESET_PASSWORD_EXPIRATION_MINUTES=10
+# Number of minutes after which a verify email token expires
+JWT_VERIFY_EMAIL_EXPIRATION_MINUTES=10
 
-# Configuration for the SMTP email service
-# For development purposes, consider using a mock SMTP service like Ethereal: https://ethereal.email/create
+# SMTP (Simple Mail Transfer Protocol) Configuration
+# For testing, you can use a fake SMTP service like Mailtrap, Ethereal, or any other
 SMTP_HOST=email-server
 SMTP_PORT=587
 SMTP_USERNAME=email-server-username
 SMTP_PASSWORD=email-server-password
-# The email address used in the "From" field for outgoing emails
-EMAIL_FROM=support@yourapp.com
+EMAIL_FROM=support@nodeboilerplate.com
 ```
 
 ## Directory Layout
