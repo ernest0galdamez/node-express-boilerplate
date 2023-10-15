@@ -1,20 +1,30 @@
+# Stage 1: Base Image
 FROM node:20-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+ENV NODE_ENV=production
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./ 
 
+# Stage 2: Development Dependencies
 FROM base AS dev-deps
-RUN pnpm install --frozen-lockfile
+# Install development dependencies using npm
+COPY package.json package-lock.json ./
+RUN npm install
 
+# Stage 3: Testing
 FROM dev-deps AS test
+# Copy the project source code
 COPY ./ ./
+# Run tests using npm
 CMD [ "npm", "run", "test" ]
 
+# Stage 4: Production Dependencies
 FROM base AS prod-deps
-RUN pnpm install --prod --frozen-lockfile
+# Install production dependencies using npm
+COPY package.json package-lock.json ./
+RUN npm install --only=production
 
+# Stage 5: Production
 FROM prod-deps
+# Copy the project source code
 COPY src/ src/
+# Start the application in production mode
 CMD [ "node", "src/index.js" ]

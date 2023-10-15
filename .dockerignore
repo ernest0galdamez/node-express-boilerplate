@@ -1,0 +1,10 @@
+docker-compose.yml
+Dockerfile
+.dockerignore
+**/coverage/
+**/node_modules/
+.github/
+.git/
+.gitattributes
+.gitignore
+*.md
