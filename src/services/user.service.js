@@ -78,6 +78,15 @@ const deleteUserById = async (userId) => {
   return user;
 };
 
+/**
+ * Get user by Google ID
+ * @param {string} googleId
+ * @returns {Promise<User>}
+ */
+const getUserByGoogleId = async (googleId) => {
+  return User.findOne({ googleId });
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -85,4 +94,5 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  getUserByGoogleId,
 };

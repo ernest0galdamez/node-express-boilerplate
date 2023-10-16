@@ -4,6 +4,7 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
+const bcrypt = require('bcryptjs');
 
 /**
  * Login with username and password
@@ -93,10 +94,56 @@ const verifyEmail = async (verifyEmailToken) => {
   }
 };
 
+/**
+ * Authenticates a user with Google OAuth data
+ * @param {object} googleProfile - Google OAuth profile data
+ * @returns {Promise<User>}
+ */
+const authenticateGoogleUser = async (googleProfile) => {
+  try {
+    // Check if a user with the Google ID already exists in your database
+    let user = await userService.getUserByGoogleId(googleProfile.id);
+
+    // If the user does not exist, check if a user with the same email exists
+    if (!user) {
+      const existingUser = await userService.getUserByEmail(googleProfile.emails[0].value);
+
+      if (existingUser) {
+        // If a user with the same email exists and they have a Google ID, return the user
+        if (existingUser.googleId) {
+          return existingUser;
+        }
+
+        // If the user has no Google ID, update their document with the Google ID and other info
+        existingUser.googleId = googleProfile.id;
+        existingUser.isEmailVerified = true;
+        await existingUser.save();
+
+        return existingUser;
+      }
+    }
+
+    // If no user exists with the Google ID or email, create a new user account using the Google data
+    user = await userService.createUser({
+      googleId: googleProfile.id,
+      name: googleProfile.displayName,
+      email: googleProfile.emails[0].value,
+      role: 'user',
+      isEmailVerified: true,
+      password: await bcrypt.hash(Math.random().toString(36).slice(-8), 8),
+    });
+
+    return user;
+  } catch (error) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Google authentication failed');
+  }
+};
+
 module.exports = {
   loginUserWithEmailAndPassword,
   logout,
   refreshAuth,
   resetPassword,
   verifyEmail,
+  authenticateGoogleUser,
 };

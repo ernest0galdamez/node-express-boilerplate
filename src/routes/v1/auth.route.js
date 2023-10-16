@@ -6,14 +6,35 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
+// User registration route
 router.post('/register', validate(authValidation.register), authController.register);
+
+// User login route
 router.post('/login', validate(authValidation.login), authController.login);
+
+// User logout route
 router.post('/logout', validate(authValidation.logout), authController.logout);
+
+// Refresh authentication tokens route
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
+
+// Forgot password route
 router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
+
+// Reset password route
 router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
+
+// Send verification email route
 router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
+
+// Verify email route
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+
+// Route for initiating Google OAuth
+router.get('/google', authController.googleOAuth);
+
+// Callback route for Google OAuth
+router.get('/google/callback', authController.googleOAuthCallback);
 
 module.exports = router;
 
@@ -76,7 +97,7 @@ module.exports = router;
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login
+ *     summary: Login as a user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -124,7 +145,7 @@ module.exports = router;
  * @swagger
  * /auth/logout:
  *   post:
- *     summary: Logout
+ *     summary: Logout user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -150,7 +171,7 @@ module.exports = router;
  * @swagger
  * /auth/refresh-tokens:
  *   post:
- *     summary: Refresh auth tokens
+ *     summary: Refresh authentication tokens
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -288,4 +309,39 @@ module.exports = router;
  *             example:
  *               code: 401
  *               message: verify email failed
+ */
+
+/**
+ * @swagger
+ * /auth/google:
+ *   get:
+ *     summary: Initiate Google OAuth
+ *     tags: [Auth]
+ *     responses:
+ *       "200":
+ *         description: OK
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+
+/**
+ * @swagger
+ * /auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     tags: [Auth]
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 tokens:
+ *                   $ref: '#/components/schemas/AuthTokens'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
  */

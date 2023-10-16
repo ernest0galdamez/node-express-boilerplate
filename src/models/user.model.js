@@ -44,6 +44,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    googleId: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -82,6 +86,10 @@ userSchema.pre('save', async function (next) {
   }
   next();
 });
+
+userSchema.methods.setPassword = async function (password) {
+  this.password = await bcrypt.hash(password, 8);
+};
 
 /**
  * @typedef User

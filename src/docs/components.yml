@@ -13,11 +13,17 @@ components:
         role:
           type: string
           enum: [user, admin]
+        isEmailVerified:
+          type: boolean
+        googleId:
+          type: string
       example:
         id: 5ebac534954b54139806c112
         email: fake@example.com
         name: fake name
         role: user
+        isEmailVerified: false
+        googleId: null
 
     Token:
       type: object
