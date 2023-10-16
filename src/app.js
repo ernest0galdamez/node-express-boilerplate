@@ -16,54 +16,55 @@ const ApiError = require('./utils/ApiError');
 
 const app = express();
 
+// Enable logging middleware based on the environment
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
 
-// set security HTTP headers
+// Set security HTTP headers
 app.use(helmet());
 
-// parse json request body
+// Parse JSON request body
 app.use(express.json());
 
-// parse urlencoded request body
+// Parse URL-encoded request body
 app.use(express.urlencoded({ extended: true }));
 
-// sanitize request data
+// Sanitize request data to prevent MongoDB injection
 app.use(mongoSanitize());
 
-// gzip compression
+// Enable gzip compression for responses
 app.use(compression());
 
-// enable cors
+// Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
 app.options('*', cors());
 
-// jwt authentication
+// Initialize Passport for JWT authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
-// limit repeated failed requests to auth endpoints
+// Rate limit repeated failed requests to auth endpoints in production
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
 
-// healthcheck api route
+// Healthcheck API route
 app.use('/health', healthcheck);
 
-// v1 api routes
+// Version 1 API routes
 app.use('/v1', routes);
 
-// send back a 404 error for any unknown api request
+// Send a 404 error for any unknown API request
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 
-// convert error to ApiError, if needed
+// Convert errors to ApiError, if needed
 app.use(errorConverter);
 
-// handle error
+// Handle errors with a custom error handler
 app.use(errorHandler);
 
 module.exports = app;
